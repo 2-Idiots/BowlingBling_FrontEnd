@@ -1,14 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-
+import { useState, useEffect } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { TbBallBowling } from 'react-icons/tb'
-import { RxDividerVertical } from 'react-icons/rx'
-import { AiOutlineSearch } from 'react-icons/ai'
+import { AiOutlineMenu, AiOutlineUser } from 'react-icons/ai'
 
-import { AiOutlineMenu } from 'react-icons/ai'
-import { AiOutlineUser } from 'react-icons/ai'
+const links = [
+  { url: '/lesson', title: '레슨' },
+  { url: '/centers', title: '볼링장' },
+  { url: '/clubs', title: '동호회' },
+]
 
 const menus = [
   { id: 1, title: '로그인', url: '/users/login' },
@@ -17,61 +18,96 @@ const menus = [
 ]
 
 export default function Navbar() {
-  const [showMenu, setShowMenu] = useState(false)
   const router = useRouter()
+  const pathname = usePathname()
+  const [activeTab, setActiveTab] = useState('')
+  const [showMenu, setShowMenu] = useState(false)
+
+  useEffect(() => {
+    const currentLink = links.find((link) => pathname.startsWith(link.url))
+    setActiveTab(currentLink ? currentLink.title : '')
+  }, [pathname])
+
+  const handleNavigation = (path: string) => {
+    router.push(path)
+  }
 
   return (
-    <nav className="h-20 border border-b-gray-20 w-full shadow-sm p-4 sm:px-10 flex justify-between align-center fixed top-0 bg-white">
-      <div className="grow basis-0 hidden my-auto font-semibold text-lg sm:text-xl text-rose-500 cursor-pointer sm:flex sm:gap-2">
-        <TbBallBowling className="text-4xl my-auto" />
-        <div className="my-auto">Bowling Bling</div>
-      </div>
-      <div className="w-full sm:w-[320px] border border-gray-200 rounded-full shadow hover:shadow-lg cursor-pointer flex justify-between pl-6 pr-2">
-        <div className="flex justify-center gap-1">
-          <div className="my-auto font-semibold text-sm">프로</div>
-          <RxDividerVertical className="text-gray-200 my-auto text-2xl" />
-          <div className="my-auto font-semibold text-sm">센터</div>
-          <RxDividerVertical className="text-gray-200 my-auto text-2xl" />
-          <div className="my-auto font-semibold text-sm">구질</div>
-          <RxDividerVertical className="text-gray-200 my-auto text-2xl" />
-          <div className="my-auto font-semibold text-sm">지하철역</div>
+    <nav className="bg-white shadow-md p-4 fixed top-0 left-0 right-0 z-50">
+      <div className="container mx-auto flex items-center justify-between">
+        <div
+          className="flex items-center gap-2 text-rose-500 cursor-pointer"
+          onClick={() => {
+            handleNavigation('/')
+            setActiveTab('')
+          }}
+        >
+          <TbBallBowling className="text-4xl" />
+          <span className="text-xl font-semibold">Bowling Bling</span>
         </div>
-        <button
-          type="button"
-          className="bg-rose-500 text-white rounded-full w-8 h-8 my-auto"
-        >
-          <AiOutlineSearch className="text-lg m-auto font-semibold" />
-        </button>
-      </div>
-      <div className="grow basis-0 hidden sm:flex gap-4 align-middle my-auto justify-end relative">
-        <button
-          type="button"
-          className="font-semibold text-sm my-auto px-4 py-3 rounded-full hover:bg-gray-50"
-        >
-          원하는 프로를 검색해보세요
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowMenu((val) => !val)}
-          className="flex align-middle gap-3 rounded-full border border-gray-20 shadow-sm px-4 py-3 my-auto hover:shadow-lg"
-        >
-          <AiOutlineMenu />
-          <AiOutlineUser />
-        </button>
-        {showMenu && (
-          <div className="border border-gray-200 shadow-lg py-2 flex flex-col absolute top-12 bg-white w-60 rounded-lg">
-            {menus?.map((menu) => (
+
+        <div className="flex-1 max-w-xl mx-4">
+          <div className="flex justify-center gap-2">
+            {links.map((link) => (
               <button
-                type="button"
-                key={menu.id}
-                className="h-10 hover:bg-gray-50 pl-3 text-sm text-gray-700 text-left"
-                onClick={() => router.push(menu.url)}
+                key={link.url}
+                onClick={() => {
+                  handleNavigation(link.url)
+                  setActiveTab(link.title)
+                }}
+                className={`py-2 px-4 rounded-full text-sm font-semibold transition-colors ${
+                  activeTab === link.title
+                    ? 'bg-rose-500 text-white'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
               >
-                {menu.title}
+                {link.title}
               </button>
             ))}
           </div>
-        )}
+        </div>
+
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            className="font-semibold text-sm px-4 py-2 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            원하는 {activeTab || '항목'}을 검색해보세요
+          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowMenu((val) => !val)}
+              className="flex items-center gap-2 rounded-full border border-gray-200 shadow-sm px-4 py-2 hover:shadow-md transition-shadow"
+            >
+              <AiOutlineMenu />
+              <AiOutlineUser />
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                <div
+                  className="py-1"
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="options-menu"
+                >
+                  {menus?.map((menu) => (
+                    <button
+                      key={menu.id}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                      onClick={() => {
+                        handleNavigation(menu.url)
+                        setShowMenu(false)
+                      }}
+                    >
+                      {menu.title}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </nav>
   )

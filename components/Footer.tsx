@@ -1,32 +1,29 @@
+import Link from 'next/link'
+
 export default function Footer() {
   return (
     <footer className="bg-gray-50 py-2">
       <div className="max-w-screen-xl w-full mx-auto p-4 md:flex md:items-center md:justify-between border-b-gray-200 border-b">
         <div className="text-sm text-gray-800 sm:text-center">
           {' '}
-          © 2024 <span className="hover:underline">Bowling-Bling.</span> All
+          © 2024 <span className="hover:underline">BowlingBling.</span> All
           Rights Reserved.
         </div>
         <ul className="flex flex-wrap gap-4 md:gap-6 items-center text-sm text-gray-800 mt-2 sm:mt-0">
           <li>
-            <a href="#" className="hover:underline">
-              개인정보 처리방침
-            </a>
+            <Link href="/users/login" className="hover:underline">
+              로그인
+            </Link>
           </li>
           <li>
-            <a href="#" className="hover:underline">
-              이용약관
-            </a>
+            <Link href="/users/signIn" className="hover:underline">
+              회원가입
+            </Link>
           </li>
           <li>
-            <a href="#" className="hover:underline">
-              공지사항
-            </a>
-          </li>
-          <li>
-            <a href="#" className="hover:underline">
-              세부정보
-            </a>
+            <Link href="/faqs" className="hover:underline">
+              FAQ
+            </Link>
           </li>
         </ul>
       </div>
