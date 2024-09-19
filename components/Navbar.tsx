@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { TbBallBowling } from 'react-icons/tb'
-import { AiOutlineMenu, AiOutlineUser } from 'react-icons/ai'
+import {
+  AiOutlineMenu,
+  AiOutlineUser,
+  AiOutlineSearch,
+  AiOutlineClose,
+} from 'react-icons/ai'
+import cn from 'classnames'
 
 const links = [
   { url: '/lesson', title: '레슨' },
@@ -17,19 +23,83 @@ const menus = [
   { id: 3, title: 'FAQ', url: '/faqs' },
 ]
 
+const filterCategories = {
+  레슨: ['프로', '센터', '구질', '지역별'],
+  볼링장: [
+    '전국',
+    '서울',
+    '경기',
+    '인천',
+    '강원',
+    '충청도',
+    '경상도',
+    '전라도',
+    '제주',
+  ],
+  동호회: [
+    '전국',
+    '서울',
+    '경기',
+    '인천',
+    '강원',
+    '충청도',
+    '경상도',
+    '전라도',
+    '제주',
+  ],
+}
+
+type FilterCategoryType = keyof typeof filterCategories | ''
+type DetailFilterType = string
+
+interface FilterProps {
+  [key: string]: string
+}
+
 export default function Navbar() {
   const router = useRouter()
   const pathname = usePathname()
-  const [activeTab, setActiveTab] = useState('')
+  const [activeTab, setActiveTab] = useState<FilterCategoryType>('')
   const [showMenu, setShowMenu] = useState(false)
+  const [showFilter, setShowFilter] = useState<boolean>(false)
+  const [detailFilter, setDetailFilter] = useState<null | DetailFilterType>(
+    null,
+  )
+  const [filterValue, setFilterValue] = useState<FilterProps>({})
+  const [lastClickedTab, setLastClickedTab] = useState<FilterCategoryType>('')
 
   useEffect(() => {
     const currentLink = links.find((link) => pathname.startsWith(link.url))
-    setActiveTab(currentLink ? currentLink.title : '')
+    if (currentLink) {
+      setActiveTab(currentLink.title as FilterCategoryType)
+      setLastClickedTab('') // Reset lastClickedTab when pathname changes
+    } else {
+      setActiveTab('')
+      setLastClickedTab('')
+    }
+    setShowFilter(false) // Close filter when pathname changes
   }, [pathname])
 
   const handleNavigation = (path: string) => {
     router.push(path)
+  }
+
+  const handleTabClick = (title: FilterCategoryType) => {
+    if (activeTab === title && lastClickedTab === title) {
+      // If clicking the same tab twice, toggle the filter
+      setShowFilter(!showFilter)
+    } else {
+      // If clicking a different tab or the same tab for the first time, just set it active
+      setShowFilter(false)
+    }
+    setActiveTab(title)
+    setLastClickedTab(title)
+    setDetailFilter(null)
+  }
+
+  const handleCloseFilter = () => {
+    setShowFilter(false)
+    setDetailFilter(null)
   }
 
   return (
@@ -40,6 +110,7 @@ export default function Navbar() {
           onClick={() => {
             handleNavigation('/')
             setActiveTab('')
+            setShowFilter(false)
           }}
         >
           <TbBallBowling className="text-4xl" />
@@ -53,13 +124,14 @@ export default function Navbar() {
                 key={link.url}
                 onClick={() => {
                   handleNavigation(link.url)
-                  setActiveTab(link.title)
+                  handleTabClick(link.title as FilterCategoryType)
                 }}
-                className={`py-2 px-4 rounded-full text-sm font-semibold transition-colors ${
+                className={cn(
+                  'py-2 px-4 rounded-full text-sm font-semibold transition-colors',
                   activeTab === link.title
                     ? 'bg-rose-500 text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
+                    : 'text-gray-600 hover:bg-gray-100',
+                )}
               >
                 {link.title}
               </button>
@@ -71,10 +143,11 @@ export default function Navbar() {
           <button
             type="button"
             className="font-semibold text-sm px-4 py-2 rounded-full hover:bg-gray-100 transition-colors"
+            onClick={() => activeTab && setShowFilter(true)}
           >
             원하는 {activeTab || '항목'}을 검색해보세요
           </button>
-          <div className="relative">
+          <div className="z-[20] relative">
             <button
               type="button"
               onClick={() => setShowMenu((val) => !val)}
@@ -109,6 +182,45 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+      {showFilter && activeTab && (
+        <div className="container mx-auto mt-4 p-4 bg-white shadow-md rounded-lg relative">
+          <button
+            onClick={handleCloseFilter}
+            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+          >
+            <AiOutlineClose className="text-xl" />
+          </button>
+          <div className="flex space-x-4 mb-4">
+            {filterCategories[activeTab].map((filter) => (
+              <button
+                key={filter}
+                className={cn(
+                  'px-4 py-2 rounded-full text-sm font-semibold',
+                  detailFilter === filter.toLowerCase()
+                    ? 'bg-rose-500 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+                )}
+                onClick={() => setDetailFilter(filter.toLowerCase())}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center">
+            <input
+              type="text"
+              placeholder={`${activeTab}을 검색해보세요`}
+              className="flex-grow py-2 px-4 rounded-l-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500"
+            />
+            <button
+              type="button"
+              className="bg-rose-500 text-white rounded-r-full p-2 px-4"
+            >
+              <AiOutlineSearch className="text-lg" />
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   )
 }
