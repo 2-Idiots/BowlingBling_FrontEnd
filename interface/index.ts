@@ -15,6 +15,26 @@ export interface LessonType {
   program: string
   operatingHours: string
   imageUrls: string[]
+  user?: UserType
+}
+
+export interface UserType {
+  email: string
+  name: string
+  nickname: string
+  password: string
+  city: string
+  age: number
+  phonenum: string
+  image: string | null
+  introduction: string | null
+  sex: string
+  role: 'USER' | 'ADMIN'
+  socialType: 'KAKAO' | 'NAVER' | 'GOOGLE' | null
+  socialId: string | null
+  refreshToken: string | null
+  Lesson?: LessonType[]
+  // club: ClubType | null
 }
 
 export interface ParamsProps {

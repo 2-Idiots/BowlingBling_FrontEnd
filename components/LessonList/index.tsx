@@ -9,7 +9,8 @@ export function LessonItem({ lesson }: { lesson: LessonType }) {
         <img
           src={lesson.imageUrls[0]}
           alt={lesson.title}
-          className="rounded-md w-full h-auto object-fit"
+          //   className="rounded-md w-full h-auto object-fit"
+          className="rounded-md w-full h-64 object-cover"
         />
         <div className="mt-2 font-semibold text-sm flex items-center">
           <span className="mr-2">{lesson.teacherName}</span>

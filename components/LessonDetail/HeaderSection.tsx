@@ -15,9 +15,11 @@ export default function HeaderSection({ data }: { data: LessonType }) {
   const [showImageModal, setShowImageModal] = useState<boolean>(false)
   return (
     <>
-      <h1 className="text-lg md:text-3xl font-medium px-4">{data?.title}</h1>
+      <h1 className="text-lg md:text-3xl font-medium px-4">
+        {data?.teacherName} {data?.category}
+      </h1>
       <div className="flex w-full justify-between items-center px-4">
-        <div className="underline text-xs md:text-sm mt-2">{data.address}</div>
+        <div className="underline text-xs md:text-sm mt-2">{data.location}</div>
         <div className="flex gap-2 text-xs md:text-sm mt-2">
           <button
             type="button"

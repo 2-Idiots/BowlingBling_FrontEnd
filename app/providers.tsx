@@ -27,7 +27,8 @@ export const NextLayout = ({ children }: Props) => {
   return (
     <>
       <Navbar />
-      <div className="mt-5 p-5 min-h-[80vh]">{children}</div>
+      {/* <div className="mt-5 p-5 min-h-[80vh]">{children}</div> */}
+      {children}
       <Footer />
     </>
   )
