@@ -6,8 +6,12 @@ import { LessonType } from '@/interface'
 import { useInfiniteQuery } from 'react-query'
 import useIntersectionObserver from '@/hooks/useintersectionObserver'
 import { fetchLessons } from '@/lib/api'
+import { BsMap } from 'react-icons/bs'
+import { useRouter } from 'next/navigation'
 
 export default function LessonsPage() {
+  const router = useRouter()
+
   const ref = useRef<HTMLDivElement | null>(null)
   const pageRef = useIntersectionObserver(ref, {})
   const isPageEnd = !!pageRef?.isIntersecting
@@ -54,6 +58,12 @@ export default function LessonsPage() {
           ))
         )}
       </GridLayout>
+      <button
+        onClick={() => router.push('/map')}
+        className="flex gap-2 items-center text-sm bg-black rounded-full text-white px-5 py-3.5 shadows-sm hover:shadow-lg mx-auto sticky bottom-12"
+      >
+        지도 표시하기 <BsMap className="text-xs" />
+      </button>
       {(isFetching || hasNextPage || isFetchingNextPage) && <Loader />}
       <div className="w-full touch-none h-10 mb-10" ref={ref} />
     </>
