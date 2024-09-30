@@ -19,8 +19,6 @@ export default function Home() {
           레슨 둘러보기
         </Link>
       </div>
-
-      {/* 여기에 추가적인 홈페이지 콘텐츠를 넣을 수 있습니다 */}
     </div>
   )
 }
