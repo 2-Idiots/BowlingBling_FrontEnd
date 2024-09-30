@@ -48,7 +48,7 @@ export default function ImageListModal({
                     이미지 전체 보기
                   </Dialog.Title>
                   <div className="mt-10 mb-20 max-w-xl mx-auto flex flex-col gap-4">
-                    {data?.images?.map((img) => (
+                    {data?.imageUrls?.map((img) => (
                       <Image
                         key={img}
                         alt="lesson img"

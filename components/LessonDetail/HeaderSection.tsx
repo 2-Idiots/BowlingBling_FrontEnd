@@ -37,7 +37,7 @@ export default function HeaderSection({ data }: { data: LessonType }) {
       </div>
       <div className="mt-6 relative">
         <div className="grid md:grid-cols-2 md:gap-4 gap-2 align-middle h-[400px] overflow-hidden md:rounded-lg">
-          {data?.images?.slice(0, 2)?.map((img) => (
+          {data?.imageUrls?.slice(0, 2)?.map((img) => (
             <div key={img} className="w-full relative">
               <Image
                 src={img}
