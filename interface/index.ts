@@ -42,3 +42,9 @@ export interface ParamsProps {
     id: string
   }
 }
+
+export interface LocationType {
+  lat?: string | null
+  lng?: string | null
+  zoom?: number
+}

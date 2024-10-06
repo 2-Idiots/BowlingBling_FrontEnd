@@ -17,3 +17,9 @@ export const FeatureDesc: Record<FeatureType, string> = {
   [FEATURE_TYPE.PROGRAM_TWOHAND]: '엄지를 사용하지 않고 두 손으로 던집니다.',
   [FEATURE_TYPE.PROGRAM_DUMBLESS]: '엄지를 사용하지 않고 한 손으로 던집니다.',
 }
+
+// const DEFAULT_LAT = 37.565337
+// const DEFAULT_LNG = 126.9772095
+export const DEFAULT_LAT = 37
+export const DEFAULT_LNG = 128
+export const ZOOM_LEVEL = 7

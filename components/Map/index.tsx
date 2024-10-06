@@ -6,7 +6,10 @@ import { useQuery } from 'react-query'
 import axios from 'axios'
 import { LessonType } from '@/interface'
 import { BsMap } from 'react-icons/bs'
-import { SetStateAction } from 'react'
+import { useSetRecoilState } from 'recoil'
+import { selectedLessonState } from '@/atom'
+import { DEFAULT_LAT, DEFAULT_LNG, ZOOM_LEVEL } from '@/constants'
+import { FullPageLoader } from '../Loader'
 
 declare global {
   interface Window {
@@ -14,22 +17,13 @@ declare global {
   }
 }
 
-// const DEFAULT_LAT = 37.565337
-// const DEFAULT_LNG = 126.9772095
-const DEFAULT_LAT = 37
-const DEFAULT_LNG = 128
-const ZOOM_LEVEL = 7
-
 // export default function Map() {
 //   const fetchBowlAlley = async () => {
 //     const { data } = await axios('/api/lesson')
 //     return data as LessonType[]
 //   }
-export default function Map({
-  setSelectedLesson,
-}: {
-  setSelectedLesson: React.Dispatch<SetStateAction<LessonType | null>>
-}) {
+export default function Map() {
+  const setSelectedLesson = useSetRecoilState(selectedLessonState)
   const fetchBowlAlley = async () => {
     try {
       const { data } = await axios.get(
@@ -110,13 +104,15 @@ export default function Map({
   }
   return (
     <>
-      {isSuccess && (
+      {isSuccess ? (
         <Script
           strategy="afterInteractive"
           type="text/javascript"
           src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_CLIENT}&autoload=false`}
           onReady={loadKakoMap}
         />
+      ) : (
+        <FullPageLoader />
       )}
       <div id="map" className="w-full h-screen" />
     </>
