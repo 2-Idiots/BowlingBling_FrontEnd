@@ -1,6 +1,7 @@
 'use client'
 import { selectedLessonState } from '@/atom'
 import { BLUR_DATA_URL } from '@/constants'
+import Link from 'next/link'
 import Image from 'next/image'
 import { AiOutlineCloseCircle } from 'react-icons/ai'
 import { useRecoilState } from 'recoil'
@@ -19,29 +20,31 @@ export default function SelectedLesson() {
           >
             <AiOutlineCloseCircle />
           </button>
-          <div className="rounded-lg-t h-[200px] overflow-hidden">
-            <Image
-              src={selectedLesson?.imageUrls?.[0]}
-              width={384}
-              height={384}
-              alt="lesson image"
-              placeholder="blur"
-              className="rounded-t-lg"
-              blurDataURL={BLUR_DATA_URL}
-            />
-          </div>
-          <div className="p-4 font-semibold bg-white rounded-b-lg">
-            <div className="mt-2">
-              {selectedLesson.teacherName} {selectedLesson.category}
+          <Link href={`/lesson/${selectedLesson.id}`}>
+            <div className="rounded-lg-t h-[200px] overflow-hidden">
+              <Image
+                src={selectedLesson?.imageUrls?.[0]}
+                width={384}
+                height={384}
+                alt="lesson image"
+                placeholder="blur"
+                className="rounded-t-lg"
+                blurDataURL={BLUR_DATA_URL}
+              />
             </div>
-            <div className="mt-1 text-gray-400">
-              센터위치 {selectedLesson.location}
+            <div className="p-4 font-semibold bg-white rounded-b-lg">
+              <div className="mt-2">
+                {selectedLesson.teacherName} {selectedLesson.category}
+              </div>
+              <div className="mt-1 text-gray-400">
+                센터위치 {selectedLesson.location}
+              </div>
+              <div className="mt-1">
+                {selectedLesson.price?.toLocaleString()}원{' '}
+                <span className="text-gray-400"> /1회</span>
+              </div>
             </div>
-            <div className="mt-1">
-              {selectedLesson.price?.toLocaleString()}원{' '}
-              <span className="text-gray-400"> /1회</span>
-            </div>
-          </div>
+          </Link>
         </div>
       )}
     </div>
