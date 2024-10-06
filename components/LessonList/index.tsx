@@ -2,14 +2,21 @@ import { LessonType } from '@/interface'
 import { ReactNode } from 'react'
 import Link from 'next/link'
 
+import Image from 'next/image'
+import { BLUR_DATA_URL } from '@/constants'
+
 export function LessonItem({ lesson }: { lesson: LessonType }) {
   return (
     <div key={lesson.id}>
       <Link href={`/lesson/${lesson.id}`}>
-        <img
+        <Image
           src={lesson.imageUrls[0]}
           alt={lesson.title}
-          //   className="rounded-md w-full h-auto object-fit"
+          width={500}
+          height={500}
+          placeholder="blur"
+          blurDataURL={BLUR_DATA_URL}
+          // className="rounded-md w-full h-auto object-fit"
           className="rounded-md w-full h-64 object-cover"
         />
         <div className="mt-2 font-semibold text-sm flex items-center">
