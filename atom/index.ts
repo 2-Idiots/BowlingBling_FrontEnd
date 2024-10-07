@@ -15,3 +15,12 @@ export const locationState = atom<LocationType>({
     zoom: ZOOM_LEVEL,
   },
 })
+
+export const filterState = atom({
+  key: 'filterState',
+  default: {
+    date: '',
+    time: '',
+    students: 1,
+  },
+})

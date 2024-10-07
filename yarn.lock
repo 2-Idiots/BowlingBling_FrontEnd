@@ -103,7 +103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/react@npm:^0.26.16":
+"@floating-ui/react@npm:^0.26.16, @floating-ui/react@npm:^0.26.23":
   version: 0.26.24
   resolution: "@floating-ui/react@npm:0.26.24"
   dependencies:
@@ -1223,7 +1223,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^2.0.0":
+"clsx@npm:^2.0.0, clsx@npm:^2.1.1":
   version: 2.1.1
   resolution: "clsx@npm:2.1.1"
   checksum: acd3e1ab9d8a433ecb3cc2f6a05ab95fe50b4a3cfc5ba47abb6cbf3754585fcb87b84e90c822a1f256c4198e3b41c7f6c391577ffc8678ad587fc0976b24fd57
@@ -1340,6 +1340,20 @@ __metadata:
     es-errors: ^1.3.0
     is-data-view: ^1.0.1
   checksum: 7f0bf8720b7414ca719eedf1846aeec392f2054d7af707c5dc9a753cc77eb8625f067fa901e0b5127e831f9da9056138d894b9c2be79c27a21f6db5824f009c2
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "date-fns@npm:3.6.0"
+  checksum: 0daa1e9a436cf99f9f2ae9232b55e11f3dd46132bee10987164f3eebd29f245b2e066d7d7db40782627411ecf18551d8f4c9fcdf2226e48bb66545407d448ab7
+  languageName: node
+  linkType: hard
+
+"dayjs@npm:^1.11.13":
+  version: 1.11.13
+  resolution: "dayjs@npm:1.11.13"
+  checksum: f388db88a6aa93956c1f6121644e783391c7b738b73dbc54485578736565c8931bdfba4bb94e9b1535c6e509c97d5deb918bbe1ae6b34358d994de735055cca9
   languageName: node
   linkType: hard
 
@@ -2066,6 +2080,7 @@ __metadata:
     autoprefixer: ^10
     axios: ^1.7.7
     classnames: ^2.5.1
+    dayjs: ^1.11.13
     eslint: ^8.55.0
     eslint-config-next: 13.5.6
     eslint-config-prettier: ^9.1.0
@@ -2075,6 +2090,7 @@ __metadata:
     prettier: 3.1.0
     prisma: ^5.19.0
     react: ^18
+    react-datepicker: ^7.4.0
     react-dom: ^18
     react-icons: ^5.3.0
     react-query: ^3.39.3
@@ -3862,6 +3878,21 @@ __metadata:
   version: 1.2.3
   resolution: "queue-microtask@npm:1.2.3"
   checksum: b676f8c040cdc5b12723ad2f91414d267605b26419d5c821ff03befa817ddd10e238d22b25d604920340fd73efd8ba795465a0377c4adf45a4a41e4234e42dc4
+  languageName: node
+  linkType: hard
+
+"react-datepicker@npm:^7.4.0":
+  version: 7.4.0
+  resolution: "react-datepicker@npm:7.4.0"
+  dependencies:
+    "@floating-ui/react": ^0.26.23
+    clsx: ^2.1.1
+    date-fns: ^3.6.0
+    prop-types: ^15.8.1
+  peerDependencies:
+    react: ^16.9.0 || ^17 || ^18
+    react-dom: ^16.9.0 || ^17 || ^18
+  checksum: 25f2576dd1983b48f41bd43604ec889cef73968093fee75389f4269563ac7ea4ea3b30ea2ebc9370931f14353507cc66f5dcd8caf5bcf8c168e5217fa59feb5a
   languageName: node
   linkType: hard
 

@@ -6,7 +6,7 @@ import { FeatureDesc } from '@/constants'
 
 export default function FeatureSection({ data }: { data: LessonType }) {
   return (
-    <div className="md:gird md:grid-cols-3 gpa-8 mt-8 relative">
+    <div className="md:grid md:grid-cols-3 gap-8 mt-8 relative">
       <div className="col-span-2">
         <div className="flex items-center justify-between px-4">
           <div>
@@ -19,7 +19,6 @@ export default function FeatureSection({ data }: { data: LessonType }) {
               {data?.contents ?? '설명이 없습니다.'}
             </p>
           </div>
-
           <Image
             src={data?.user?.image || '/images/bowling-profile.png'}
             alt="user log"
@@ -65,6 +64,24 @@ export default function FeatureSection({ data }: { data: LessonType }) {
           <h2 className="text-lg md:text-md">센터위치</h2>
           <div className="flex flex-col md:mt-2 text-md text-gray-500">
             {data?.location ?? '센터 정보가 없습니다.'}
+          </div>
+        </div>
+        <div className="py-8 px-4 border-b border-gray-300 leading-8 text-gray-800">
+          <h1 className="font-semibold text-xl mb-2">캘린더</h1>
+          <div className="mt-4 rounded-lg p-5 border border-gray-300">
+            캘린더가 들어감.
+          </div>
+        </div>
+        <div className="py-8 px-4 border-b border-gray-300 leading-8 text-gray-800">
+          <h1 className="font-semibold text-xl mb-2">후기</h1>
+          <div className="mt-4 rounded-lg p-5 border border-gray-300">
+            후기가 들어감.
+          </div>
+        </div>
+        <div className="py-8 px-4 border-b border-gray-300 leading-8 text-gray-800">
+          <h1 className="font-semibold text-xl mb-2">지도</h1>
+          <div className="mt-4 rounded-lg p-5 border border-gray-300">
+            지도가 들어감.
           </div>
         </div>
       </div>
