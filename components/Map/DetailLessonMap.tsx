@@ -2,11 +2,7 @@
 /*global kakao*/
 
 import Script from 'next/script'
-import { useQuery } from 'react-query'
-import axios from 'axios'
 import { LessonType } from '@/interface'
-import { BsMap } from 'react-icons/bs'
-import { DEFAULT_LAT, DEFAULT_LNG, ZOOM_LEVEL } from '@/constants'
 import { FullPageLoader } from '../Loader'
 
 declare global {
@@ -14,12 +10,6 @@ declare global {
     kakao: any
   }
 }
-
-// export default function Map() {
-//   const fetchBowlAlley = async () => {
-//     const { data } = await axios('/api/lesson')
-//     return data as LessonType[]
-//   }
 export default function DetailLessonMap({ data }: { data: LessonType }) {
   // @see - https://apis.map.kakao.com/web/documentation/#load
   const loadKakoMap = () => {
