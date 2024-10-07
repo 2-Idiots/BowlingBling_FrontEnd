@@ -2092,6 +2092,7 @@ __metadata:
     eslint-config-next: 13.5.6
     eslint-config-prettier: ^9.1.0
     eslint-plugin-prettier: ^5.0.1
+    kakao-js-sdk: ^1.2.3
     next: 13.5.6
     postcss: ^8
     prettier: 3.1.0
@@ -2100,6 +2101,7 @@ __metadata:
     react-calendar: ^5.0.0
     react-datepicker: ^7.4.0
     react-dom: ^18
+    react-hot-toast: ^2.4.1
     react-icons: ^5.3.0
     react-query: ^3.39.3
     recoil: ^0.7.7
@@ -2422,6 +2424,15 @@ __metadata:
     merge2: ^1.4.1
     slash: ^3.0.0
   checksum: b4be8885e0cfa018fc783792942d53926c35c50b3aefd3fdcfb9d22c627639dc26bd2327a40a0b74b074100ce95bb7187bfeae2f236856aa3de183af7a02aea6
+  languageName: node
+  linkType: hard
+
+"goober@npm:^2.1.10":
+  version: 2.1.14
+  resolution: "goober@npm:2.1.14"
+  peerDependencies:
+    csstype: ^3.0.10
+  checksum: 78978b7192d6a1af5cfbf1fd64b661b5f53ee6c733554b1f1b2ad3e1e2c979847fc080434390647640bb8358c0b193895d0007432c0886d12001f02f8f56b5e6
   languageName: node
   linkType: hard
 
@@ -3008,6 +3019,13 @@ __metadata:
     object.assign: ^4.1.4
     object.values: ^1.1.6
   checksum: f4b05fa4d7b5234230c905cfa88d36dc8a58a6666975a3891429b1a8cdc8a140bca76c297225cb7a499fad25a2c052ac93934449a2c31a44fc9edd06c773780a
+  languageName: node
+  linkType: hard
+
+"kakao-js-sdk@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "kakao-js-sdk@npm:1.2.3"
+  checksum: 1ad2842466e383267fa91c13b47b5f5a5c1c11f5bbf5408127d7a8ec9975cd62ff08c6c14c4af79d7cb6139ec4bc61a9b9ad21f09f7805bba5761a8d0c675e0c
   languageName: node
   linkType: hard
 
@@ -3974,6 +3992,18 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
   checksum: 298954ecd8f78288dcaece05e88b570014d8f6dce5db6f66e6ee91448debeb59dcd31561dddb354eee47e6c1bb234669459060deb238ed0213497146e555a0b9
+  languageName: node
+  linkType: hard
+
+"react-hot-toast@npm:^2.4.1":
+  version: 2.4.1
+  resolution: "react-hot-toast@npm:2.4.1"
+  dependencies:
+    goober: ^2.1.10
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: 3e337816db574782454bf09c63a8aca546bf9c5be3f83d0494d24bdcfd97ca2db64d4c151c4ab0184d2342d7a7226403e6812e70caf03c8b55a07787bb4ad0f2
   languageName: node
   linkType: hard
 
