@@ -3,6 +3,7 @@ import Image from 'next/image'
 import BookingSection from './BookingSection'
 import { TbBallBowling } from 'react-icons/tb'
 import { FeatureDesc } from '@/constants'
+import CalendarSection from './CalendarSection'
 
 export default function FeatureSection({ data }: { data: LessonType }) {
   return (
@@ -61,9 +62,7 @@ export default function FeatureSection({ data }: { data: LessonType }) {
         </div>
         <div className="py-8 px-4 border-b border-gray-300 leading-8 text-gray-800">
           <h1 className="font-semibold text-xl mb-2">캘린더</h1>
-          <div className="mt-4 rounded-lg p-5 border border-gray-300">
-            캘린더가 들어감.
-          </div>
+          <CalendarSection />
         </div>
         <div className="py-8 px-4 border-b border-gray-300 leading-8 text-gray-800">
           <h1 className="font-semibold text-xl mb-2">후기</h1>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { filterState } from '@/atom'
 import { LessonType } from '@/interface'
 import { useRecoilState } from 'recoil'
@@ -12,28 +12,34 @@ export default function BookingSection({ data }: { data: LessonType }) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
 
+  useEffect(() => {
+    setSelectedDate(filterValue.date || null)
+    setSelectedTime(filterValue.time || null)
+  }, [filterValue.date, filterValue.time])
+
   const onChangeDate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const date = e.target.value
     setSelectedDate(date)
-    setFilterValue({
-      ...filterValue,
+    setFilterValue((prev) => ({
+      ...prev,
       date: date,
-    })
+      time: '', // Reset time when date changes
+    }))
   }
 
   const onChangeTime = (time: string) => {
     setSelectedTime(time)
-    setFilterValue({
-      ...filterValue,
+    setFilterValue((prev) => ({
+      ...prev,
       time: time,
-    })
+    }))
   }
 
   const onChangeStudents = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterValue({
-      ...filterValue,
+    setFilterValue((prev) => ({
+      ...prev,
       students: Number(e.target.value),
-    })
+    }))
   }
 
   // 시간 슬롯, 실제로는 data.operatingHours에서 가져와야함.
