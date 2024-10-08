@@ -10,6 +10,8 @@ import {
   AiOutlineClose,
 } from 'react-icons/ai'
 import cn from 'classnames'
+import { useSession, signOut } from 'next-auth/react'
+import Link from 'next/link'
 
 const links = [
   { url: '/lesson', title: '레슨' },
@@ -17,9 +19,15 @@ const links = [
   { url: '/clubs', title: '동호회' },
 ]
 
-const menus = [
-  { id: 1, title: '로그인', url: '/users/login' },
+const LOGIN_USER_MENU = [
+  { id: 1, title: '로그인', url: '/users/signin' },
   { id: 2, title: '회원가입', url: '/users/signup' },
+  { id: 3, title: 'FAQ', url: '/faqs' },
+]
+
+const LOGOUT_USER_MENU = [
+  { id: 1, title: '로그아웃', url: '#', signOut: true },
+  { id: 2, title: '프로필', url: '/users/profile' },
   { id: 3, title: 'FAQ', url: '/faqs' },
 ]
 
@@ -59,6 +67,7 @@ interface FilterProps {
 export default function Navbar() {
   const router = useRouter()
   const pathname = usePathname()
+  const { data: session, status } = useSession()
   const [activeTab, setActiveTab] = useState<FilterCategoryType>('')
   const [showMenu, setShowMenu] = useState(false)
   const [showFilter, setShowFilter] = useState<boolean>(false)
@@ -102,20 +111,25 @@ export default function Navbar() {
     setDetailFilter(null)
   }
 
+  const handleMenuClick = (menu: { url: string; signOut?: boolean }) => {
+    if (menu.signOut) {
+      signOut({ callbackUrl: '/' })
+    } else {
+      router.push(menu.url)
+    }
+    setShowMenu(false)
+  }
+
   return (
     <nav className="bg-white shadow-md p-4 fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto flex items-center justify-between">
-        <div
+        <Link
+          href="/"
           className="flex items-center gap-2 text-rose-500 cursor-pointer"
-          onClick={() => {
-            handleNavigation('/')
-            setActiveTab('')
-            setShowFilter(false)
-          }}
         >
           <TbBallBowling className="text-4xl" />
           <span className="text-xl font-semibold">Bowling Bling</span>
-        </div>
+        </Link>
 
         <div className="flex-1 max-w-xl mx-4">
           <div className="flex justify-center gap-2">
@@ -145,7 +159,7 @@ export default function Navbar() {
             className="font-semibold text-sm px-4 py-2 rounded-full hover:bg-gray-100 transition-colors"
             onClick={() => activeTab && setShowFilter(true)}
           >
-            원하는 {activeTab || '항목'}을 검색해보세요
+            원하는 {activeTab || '항목'} 검색해보세요
           </button>
           <div className="z-[20] relative">
             <button
@@ -154,7 +168,15 @@ export default function Navbar() {
               className="flex items-center gap-2 rounded-full border border-gray-200 shadow-sm px-4 py-2 hover:shadow-md transition-shadow"
             >
               <AiOutlineMenu />
-              <AiOutlineUser />
+              {status === 'authenticated' && session?.user?.image ? (
+                <img
+                  src={session.user.image}
+                  alt="Profile"
+                  className="rounded-full w-4 h-4 my-auto"
+                />
+              ) : (
+                <AiOutlineUser />
+              )}
             </button>
             {showMenu && (
               <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
@@ -164,14 +186,14 @@ export default function Navbar() {
                   aria-orientation="vertical"
                   aria-labelledby="options-menu"
                 >
-                  {menus?.map((menu) => (
+                  {(status === 'authenticated'
+                    ? LOGOUT_USER_MENU
+                    : LOGIN_USER_MENU
+                  ).map((menu) => (
                     <button
                       key={menu.id}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                      onClick={() => {
-                        handleNavigation(menu.url)
-                        setShowMenu(false)
-                      }}
+                      onClick={() => handleMenuClick(menu)}
                     >
                       {menu.title}
                     </button>
@@ -209,7 +231,7 @@ export default function Navbar() {
           <div className="flex items-center">
             <input
               type="text"
-              placeholder={`${activeTab}을 검색해보세요`}
+              placeholder={`${activeTab}검색해보세요`}
               className="flex-grow py-2 px-4 rounded-l-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-500"
             />
             <button

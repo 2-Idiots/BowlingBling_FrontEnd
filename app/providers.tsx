@@ -5,6 +5,8 @@ import Navbar from '@/components/Navbar'
 import { RecoilRoot } from 'recoil'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
+import { SessionProvider } from 'next-auth/react'
+import { Toaster } from 'react-hot-toast'
 
 interface Props {
   children?: React.ReactNode
@@ -16,7 +18,10 @@ export const NextProvider = ({ children }: Props) => {
   return (
     <RecoilRoot>
       <QueryClientProvider client={queryClient}>
-        {children}
+        <SessionProvider>
+          {children}
+          <Toaster />
+        </SessionProvider>
         <ReactQueryDevtools />
       </QueryClientProvider>
     </RecoilRoot>
