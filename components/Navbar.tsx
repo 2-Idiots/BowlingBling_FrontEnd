@@ -26,9 +26,9 @@ const LOGIN_USER_MENU = [
 ]
 
 const LOGOUT_USER_MENU = [
-  { id: 1, title: '로그아웃', url: '#', signOut: true },
-  { id: 2, title: '프로필', url: '/users/profile' },
-  { id: 3, title: 'FAQ', url: '/faqs' },
+  { id: 1, title: '프로필', url: '/users/mypage' },
+  { id: 2, title: 'FAQ', url: '/faqs' },
+  { id: 3, title: '로그아웃', url: '#', signOut: true },
 ]
 
 const filterCategories = {

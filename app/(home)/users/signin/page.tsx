@@ -1,41 +1,45 @@
 'use client'
-
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { signIn, useSession } from 'next-auth/react'
 import { FcGoogle } from 'react-icons/fc'
-import toast from 'react-hot-toast'
 import { RiKakaoTalkFill } from 'react-icons/ri'
+import toast from 'react-hot-toast'
 
 export default function SignInPage() {
   const router = useRouter()
   const { status } = useSession()
-
-  const handleClickGoogle = () => {
-    console.log('login!')
-    try {
-      signIn('google', { callbackUrl: '/' })
-    } catch (e) {
-      console.log(e)
-      toast.error('다시 시도해주세요')
-    }
-  }
-
-  const handleClickKakao = () => {
-    try {
-      signIn('kakao', { callbackUrl: '/' })
-    } catch (e) {
-      console.log(e)
-      toast.error('다시 시도해주세요')
-    }
-  }
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     if (status === 'authenticated') {
-      toast.error('접근할 수 없습니다.')
       router.replace('/')
     }
-  }, [router, status])
+  }, [status, router])
+
+  const handleSocialLogin = async (provider: 'google' | 'kakao') => {
+    setIsLoading(true)
+    try {
+      const result = await signIn(provider, {
+        callbackUrl: '/',
+        redirect: false,
+      })
+      if (result?.error) {
+        toast.error('로그인에 실패했습니다.')
+      } else if (result?.url) {
+        router.push(result.url)
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+      toast.error('로그인 중 오류가 발생했습니다.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (status === 'loading' || isLoading) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div className="max-w-xl mx-auto pt-10 pb-24">
@@ -54,7 +58,7 @@ export default function SignInPage() {
       <div className="flex flex-col gap-5 mt-16">
         <button
           type="button"
-          onClick={handleClickGoogle}
+          onClick={() => handleSocialLogin('google')}
           className="relative border border-gray-700 rounded-md py-3 text-sm hover:bg-black/5 text-center font-semibold"
         >
           <FcGoogle className="absolute left-5 text-xl" />
@@ -62,7 +66,7 @@ export default function SignInPage() {
         </button>
         <button
           type="button"
-          onClick={handleClickKakao}
+          onClick={() => handleSocialLogin('kakao')}
           className="relative border border-gray-700 rounded-md py-3 text-sm hover:bg-black/5 text-center font-semibold"
         >
           <RiKakaoTalkFill className="absolute left-5 text-yellow-950 text-xl my-auto inset-y-0" />
