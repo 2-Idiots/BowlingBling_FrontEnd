@@ -59,3 +59,19 @@ export interface CenterType {
   lat: string
   lng: string
 }
+
+export interface GatheringType {
+  id: number
+  leadername: string
+  title: string
+  minAverage: number
+  maxAverage: number
+  description: string
+  location: string
+  date: string
+  maxParticipants: number
+  currentParticipants: number
+  images: string[]
+  lat: string
+  lng: string
+}

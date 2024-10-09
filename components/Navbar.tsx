@@ -17,6 +17,7 @@ const links = [
   { url: '/lesson', title: '레슨' },
   { url: '/centers', title: '볼링장' },
   { url: '/clubs', title: '동호회' },
+  { url: '/gatherings', title: '벙개' },
 ]
 
 const LOGIN_USER_MENU = [
