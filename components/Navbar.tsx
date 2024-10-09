@@ -21,8 +21,8 @@ const links = [
 ]
 
 const LOGIN_USER_MENU = [
-  { id: 1, title: '로그인', url: '/users/signin' },
-  { id: 2, title: '회원가입', url: '/users/signup' },
+  { id: 1, title: '로그인', url: '/users/login' },
+  { id: 2, title: '회원가입', url: '/users/sign-up' },
   { id: 3, title: 'FAQ', url: '/faqs' },
 ]
 
