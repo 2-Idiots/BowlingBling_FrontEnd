@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           scope:
-            'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email', // 필요한 권한
+            'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
         },
       },
       profile(profile) {
@@ -63,7 +63,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.KAKAO_CLIENT_SECRET!,
       authorization: {
         params: {
-          scope: 'profile_nickname, profile_image', // 필요한 권한
+          scope: 'profile_nickname, profile_image',
         },
       },
       profile(profile) {
@@ -81,29 +81,38 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id
         token.email = user.email
         token.role = (user as UserType).role
-        console.log('JWT Token after login:', token)
       }
-
       if (account) {
         if (account.provider === 'google') {
-          token.accessToken = account.access_token // google Access Token 저장
+          token.accessToken = account.access_token
+          const profileRes = await fetch(
+            `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${account.access_token}`,
+          )
+          const profileData = await profileRes.json()
+          token.name = profileData.name
+          token.picture = profileData.picture
         }
         if (account.provider === 'kakao') {
-          token.accessToken = account.access_token // kakao Access Token 저장
+          token.accessToken = account.access_token
+          const profileRes = await fetch(`https://kapi.kakao.com/v2/user/me`, {
+            headers: {
+              Authorization: `Bearer ${account.access_token}`,
+            },
+          })
+          const profileData = await profileRes.json()
+          token.name = profileData.properties.nickname
+          token.picture = profileData.properties.profile_image
         }
       }
-
       return token
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string
-        session.user.email = token.email as string
-        session.user.role = token.role as string
-        session.user.accessToken = token.accessToken // 세션에 액세스 토큰 저장
-
-        console.log('Session after login:', session)
-      }
+      session.user.id = token.id as string
+      session.user.email = token.email as string
+      session.user.role = token.role as string
+      session.user.accessToken = token.accessToken
+      session.user.name = token.name as string
+      session.user.picture = token.picture as string
       return session
     },
   },

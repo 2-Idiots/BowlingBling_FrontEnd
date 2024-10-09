@@ -5,8 +5,10 @@ import axios from 'axios'
 import { signOut, useSession } from 'next-auth/react'
 import { useQuery } from 'react-query'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function UserInfoPage() {
+  const router = useRouter()
   const { data: session } = useSession()
   const [error, setError] = useState<string | null>(null)
 
@@ -49,6 +51,7 @@ export default function UserInfoPage() {
       <div className="flex justify-between gap-4">
         <h1 className="text-3xl font-semibold">개인정보</h1>
         <button
+          onClick={() => router.push('/users/edit')}
           type="button"
           className="text-sm font-semibold underline px-4 py-1.5 rounded-md hover:bg-black/5"
         >

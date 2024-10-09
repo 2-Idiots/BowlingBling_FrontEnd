@@ -20,6 +20,6 @@ export const FeatureDesc: Record<FeatureType, string> = {
 
 // const DEFAULT_LAT = 37.565337
 // const DEFAULT_LNG = 126.9772095
-export const DEFAULT_LAT = 37
-export const DEFAULT_LNG = 128
+export const DEFAULT_LAT = 37.465337
+export const DEFAULT_LNG = 126.9992095
 export const ZOOM_LEVEL = 7

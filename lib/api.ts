@@ -16,4 +16,16 @@ export const fetchLessonById = async (id: string) => {
   return response.data
 }
 
+export const fetchCenters = async (page = 1, limit = 8) => {
+  const response = await api.get('/centers', {
+    params: { page, limit },
+  })
+  return response.data
+}
+
+export const fetchCenterById = async (id: string) => {
+  const response = await api.get(`/centers/${id}`)
+  return response.data
+}
+
 export default api

@@ -48,3 +48,14 @@ export interface LocationType {
   lng?: string | null
   zoom?: number
 }
+
+export interface CenterType {
+  id: number
+  businessName: string
+  location: string
+  operatingHours: string
+  laneCount: number
+  images: string[]
+  lat: string
+  lng: string
+}
