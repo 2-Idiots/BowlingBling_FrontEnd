@@ -3,14 +3,14 @@ import { getSession } from 'next-auth/react'
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
 })
 
 api.interceptors.request.use(
   async (config) => {
     const session = await getSession()
-    if (session?.backendToken) {
-      const token = JSON.parse(session.backendToken)
-      config.headers['Authorization'] = `Bearer ${token.accessToken}`
+    if (session?.accessToken) {
+      config.headers['Authorization'] = `Bearer ${session.accessToken}`
     }
     return config
   },
@@ -61,8 +61,13 @@ export const fetchGatheringById = async (id: string) => {
 
 // 사용자 정보
 export const fetchUserInfo = async () => {
-  const response = await api.get('/users/info')
-  return response.data
+  try {
+    const response = await api.get('/users/info')
+    return response.data
+  } catch (error) {
+    console.error('Error fetching user info:', error)
+    throw error
+  }
 }
 
 export const updateUserProfile = async (userData: any) => {
