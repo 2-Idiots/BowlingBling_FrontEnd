@@ -50,6 +50,7 @@ export const fetchGatherings = async (page = 1, limit = 8) => {
   const response = await api.get('/gatherings', {
     params: { page, limit },
   })
+  console.log('Gatherings data:', response.data)
   return response.data
 }
 

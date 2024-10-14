@@ -54,6 +54,7 @@ export interface CenterType {
   businessName: string
   location: string
   operatingHours: string
+  announcements: string
   laneCount: number
   images: string[]
   lat: string

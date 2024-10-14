@@ -1,6 +1,8 @@
+'use client'
 import { CenterType } from '@/interface'
 import { GiBowlingAlley } from 'react-icons/gi'
 import { IoTimeSharp } from 'react-icons/io5'
+import MapSection from './MapSection'
 
 export default function FeatureSection({ data }: { data: CenterType }) {
   return (
@@ -12,6 +14,13 @@ export default function FeatureSection({ data }: { data: CenterType }) {
               {data?.businessName}
             </h1>
             <p className="text-md text-gray-600 mt-1">{data?.location}</p>
+          </div>
+        </div>
+
+        <div className="mt-8 py-1 px-4">
+          <h2 className="text-lg md:text-md font-semibold">소개</h2>
+          <div className="flex items-center md:mt-2 text-md">
+            {data?.announcements}
           </div>
         </div>
 
@@ -32,6 +41,7 @@ export default function FeatureSection({ data }: { data: CenterType }) {
             <div className="font-medium">총 레인 수: {data.laneCount}</div>
           </div>
         </div>
+        <MapSection data={data} />
       </div>
     </div>
   )

@@ -128,7 +128,7 @@ export default function BookingSection({ data }: { data: LessonType }) {
               레슨 예약하기
             </button>
             <p className="text-center text-gray-600 mt-4 text-xs md:text-sm">
-              예약 확정 전에는 요금이 청구되지 않습니다.
+              예약 확정에는 요금이 청구되지 않습니다.
             </p>
           </div>
         </form>
@@ -141,12 +141,12 @@ export default function BookingSection({ data }: { data: LessonType }) {
               ₩{(data?.price * (filterValue.students || 1)).toLocaleString()}
             </div>
           </div>
-          <div className="flex justify-between">
+          {/* <div className="flex justify-between">
             <div className="text-gray-600 underline underline-offset-4">
               예약 수수료
             </div>
             <div className="text-gray-500">₩0</div>
-          </div>
+          </div> */}
           <div className="flex justify-between mt-6">
             <div>총 합계</div>
             <div>
