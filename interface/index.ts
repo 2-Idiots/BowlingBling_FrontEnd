@@ -37,6 +37,17 @@ export interface UserType {
   // club: ClubType | null
 }
 
+export interface UserProfileUpdateType {
+  email?: string
+  name?: string
+  nickname?: string
+  phonenum?: string
+  city?: string
+  sex?: string
+  introduction?: string
+  age?: number
+}
+
 export interface ParamsProps {
   params: {
     id: string

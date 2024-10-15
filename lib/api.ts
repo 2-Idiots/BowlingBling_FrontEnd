@@ -1,3 +1,4 @@
+import { UserProfileUpdateType } from '@/interface'
 import axios from 'axios'
 import { getSession } from 'next-auth/react'
 
@@ -8,9 +9,12 @@ const api = axios.create({
 
 api.interceptors.request.use(
   async (config) => {
-    const session = await getSession()
-    if (session?.accessToken) {
-      config.headers['Authorization'] = `Bearer ${session.accessToken}`
+    if (config.method !== 'OPTIONS') {
+      const session = await getSession()
+      console.log('Interceptor Session:', session) // 여기에 로그를 추가합니다.
+      if (session?.accessToken) {
+        config.headers['Authorization'] = `Bearer ${session.accessToken}`
+      }
     }
     return config
   },
@@ -70,9 +74,51 @@ export const fetchUserInfo = async () => {
   }
 }
 
-export const updateUserProfile = async (userData: any) => {
-  const response = await api.put('/users/profile/update', userData)
-  return response.data
+export const updateUserProfile = async (
+  userData: UserProfileUpdateType,
+  file?: File,
+) => {
+  try {
+    const session = await getSession()
+    if (!session?.accessToken) {
+      throw new Error('No access token available')
+    }
+
+    const formData = new FormData()
+
+    // JSON 데이터를 문자열로 변환하여 'request' 키로 추가
+    formData.append(
+      'request',
+      new Blob([JSON.stringify(userData)], { type: 'application/json' }),
+    )
+
+    // 파일이 있는 경우 'files' 키로 추가
+    if (file) {
+      formData.append('files', file)
+    }
+
+    const response = await api.patch('/users/profile/update', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+
+    return response.data
+  } catch (error) {
+    console.error('Error updating user profile:', error)
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        console.error('Response data:', error.response.data)
+        console.error('Response status:', error.response.status)
+        console.error('Response headers:', error.response.headers)
+      } else if (error.request) {
+        console.error('No response received:', error.request)
+      } else {
+        console.error('Error setting up request:', error.message)
+      }
+    }
+    throw error
+  }
 }
 
 export default api

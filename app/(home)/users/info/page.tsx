@@ -60,11 +60,12 @@ export default function UserInfoPage() {
         <div className="flex flex-col gap-2 border-b-gray-200 border-b py-4">
           <h1 className="font-semibold">이미지</h1>
           <Image
-            src={user.image || '/images/user-icon.png'}
+            src={user.image || '/images/bowling-profile.png'}
             width={50}
             height={50}
             alt="user img"
             className="rounded-lg shadow"
+            unoptimized
           />
         </div>
         <InfoItem title="도시" value={user.city} />
