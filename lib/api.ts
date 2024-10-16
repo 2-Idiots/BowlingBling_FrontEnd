@@ -31,8 +31,70 @@ export const fetchLessons = async (page = 1, limit = 8) => {
   return response.data
 }
 
+// export const fetchLessonById = async (id: string) => {
+//   const response = await api.get(`/lesson/${id}`)
+//   return response.data
+// }
+
 export const fetchLessonById = async (id: string) => {
   const response = await api.get(`/lesson/${id}`)
+  const lessonData = response.data
+
+  // 백엔드에서 id나 isLiked를 제공하지 않는 경우, 여기서 추가
+  return {
+    ...lessonData,
+    id: parseInt(id), // 문자열 id를 숫자로 변환
+    isLiked: lessonData.isLiked || false, // isLiked가 없으면 기본값 false
+  }
+}
+
+// 레슨 찜하기
+export const likeLesson = async (lessonId: number) => {
+  const session = await getSession()
+  if (!session?.accessToken) {
+    throw new Error('No access token available')
+  }
+  if (lessonId === undefined || lessonId === null) {
+    throw new Error('Invalid lesson id')
+  }
+  console.log('Sending like request for lesson:', lessonId)
+  const response = await api.post(`/lesson/${lessonId}/like`, null, {
+    headers: {
+      Authorization: `Bearer ${session.accessToken}`,
+    },
+  })
+  console.log('Like response:', response.data)
+  return response.data
+}
+
+export const unlikeLesson = async (lessonId: number) => {
+  const session = await getSession()
+  if (!session?.accessToken) {
+    throw new Error('No access token available')
+  }
+  if (lessonId === undefined || lessonId === null) {
+    throw new Error('Invalid lesson id')
+  }
+  console.log('Sending unlike request for lesson:', lessonId)
+  const response = await api.post(`/lesson/${lessonId}/like-cancel`, null, {
+    headers: {
+      Authorization: `Bearer ${session.accessToken}`,
+    },
+  })
+  console.log('Unlike response:', response.data)
+  return response.data
+}
+
+export const fetchUserLikedLessons = async () => {
+  const session = await getSession()
+  if (!session?.accessToken) {
+    throw new Error('No access token available')
+  }
+  const response = await api.get('/users/liked-lessons', {
+    headers: {
+      Authorization: `Bearer ${session.accessToken}`,
+    },
+  })
   return response.data
 }
 

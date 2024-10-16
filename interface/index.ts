@@ -16,6 +16,7 @@ export interface LessonType {
   operatingHours: string
   imageUrls: string[]
   user?: UserType
+  isLiked: boolean
 }
 
 export interface UserType {
