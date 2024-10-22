@@ -111,6 +111,40 @@ export const fetchCenterById = async (id: string) => {
   return response.data
 }
 
+// 댓글
+export const fetchComments = async (lessonId: number, page = 0) => {
+  const response = await api.get(`/lesson/${lessonId}/comments`, {
+    params: { page },
+  })
+  return response.data
+}
+
+export const createComment = async (lessonId: number, comments: string) => {
+  const response = await api.post(`/lesson/${lessonId}/comments/save`, {
+    comments,
+  })
+  return response.data
+}
+
+export const updateComment = async (
+  lessonId: number,
+  commentId: number,
+  comments: string,
+) => {
+  const response = await api.patch(
+    `/lesson/${lessonId}/comments/${commentId}/update`,
+    { comments },
+  )
+  return response.data
+}
+
+export const deleteComment = async (lessonId: number, commentId: number) => {
+  const response = await api.delete(
+    `/lesson/${lessonId}/comments/${commentId}/delete`,
+  )
+  return response.data
+}
+
 // 벙개
 export const fetchGatherings = async (page = 1, limit = 8) => {
   const response = await api.get('/gatherings', {

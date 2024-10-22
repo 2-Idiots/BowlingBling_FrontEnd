@@ -38,6 +38,21 @@ export interface UserType {
   // club: ClubType | null
 }
 
+export interface CommentType {
+  id: number
+  comments: string
+  memberName: string
+  modifiedAt: string
+}
+
+export interface CommentApiType {
+  content: CommentType[]
+  totalElements: number
+  totalPages: number
+  size: number
+  number: number
+}
+
 export interface UserProfileUpdateType {
   email?: string
   name?: string

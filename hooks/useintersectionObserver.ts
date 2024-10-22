@@ -2,7 +2,12 @@ import { RefObject, useState, useEffect } from 'react'
 
 function useIntersectionObserver(
   elementRef: RefObject<Element>,
-  { threshold = 0.1, root = null, rootMargin = '0%' },
+  {
+    threshold = 0.1,
+    root = null,
+    rootMargin = '0%',
+    enableObserver = true,
+  } = {},
 ) {
   const [entry, setEntry] = useState<IntersectionObserverEntry>()
 
@@ -14,7 +19,7 @@ function useIntersectionObserver(
     const node = elementRef?.current
     const hasIOSupport = !!window.IntersectionObserver
 
-    if (!node || !hasIOSupport) return
+    if (!node || !hasIOSupport || !enableObserver) return
 
     const observerParams = { threshold, root, rootMargin }
     const observer = new IntersectionObserver(updateEntry, observerParams)
@@ -22,7 +27,7 @@ function useIntersectionObserver(
     observer.observe(node)
 
     return () => observer.disconnect()
-  }, [elementRef?.current, root, rootMargin, JSON.stringify(threshold)])
+  }, [elementRef?.current, root, rootMargin, threshold, enableObserver])
 
   return entry
 }
