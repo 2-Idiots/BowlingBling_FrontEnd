@@ -4,14 +4,14 @@ import { toast } from 'react-hot-toast'
 import { useSession } from 'next-auth/react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { likeLesson, unlikeLesson, fetchUserLikedLessons } from '@/lib/api'
-import { LessonType } from '@/interface'
+import { LessonType, LikedLessonsResponse } from '@/interface'
 
 export default function LikeButton({ lesson }: { lesson: LessonType }) {
   const { data: session, status } = useSession()
   const queryClient = useQueryClient()
   const [isLiked, setIsLiked] = useState(false)
 
-  const { data: likedLessons } = useQuery(
+  const { data: likedLessonsResponse } = useQuery<LikedLessonsResponse>(
     'userLikedLessons',
     fetchUserLikedLessons,
     {
@@ -21,12 +21,14 @@ export default function LikeButton({ lesson }: { lesson: LessonType }) {
   )
 
   useEffect(() => {
-    if (likedLessons) {
+    if (likedLessonsResponse?.data) {
       setIsLiked(
-        likedLessons.some((likedLesson: any) => likedLesson.id === lesson.id),
+        likedLessonsResponse.data.some(
+          (likedLesson) => likedLesson.id === lesson.id,
+        ),
       )
     }
-  }, [likedLessons, lesson.id])
+  }, [likedLessonsResponse, lesson.id])
 
   const likeMutation = useMutation(likeLesson, {
     onSuccess: () => {

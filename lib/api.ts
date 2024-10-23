@@ -101,17 +101,30 @@ export const unlikeLesson = async (lessonId: number) => {
   return response.data
 }
 
-export const fetchUserLikedLessons = async () => {
-  const session = await getSession()
-  if (!session?.accessToken) {
-    throw new Error('No access token available')
-  }
+// export const fetchUserLikedLessons = async () => {
+//   const session = await getSession()
+//   if (!session?.accessToken) {
+//     throw new Error('No access token available')
+//   }
+//   const response = await api.get('/users/liked-lessons', {
+//     headers: {
+//       Authorization: `Bearer ${session.accessToken}`,
+//     },
+//   })
+//   return response.data
+// }
+
+export const fetchUserLikedLessons = async ({ pageParam = 1 }) => {
   const response = await api.get('/users/liked-lessons', {
-    headers: {
-      Authorization: `Bearer ${session.accessToken}`,
+    params: {
+      page: pageParam,
+      limit: 8,
     },
   })
-  return response.data
+  return {
+    data: response.data,
+    page: pageParam,
+  }
 }
 
 // 볼링장

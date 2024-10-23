@@ -38,6 +38,11 @@ export interface UserType {
   // club: ClubType | null
 }
 
+export interface LikedLessonsResponse {
+  data: LessonType[]
+  page: number
+}
+
 export interface CommentType {
   id: number
   image: string | null
