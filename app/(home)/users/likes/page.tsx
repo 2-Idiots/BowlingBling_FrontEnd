@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from 'react'
 import { useInfiniteQuery } from 'react-query'
 import { useSession } from 'next-auth/react'
-import { LessonType } from '@/interface'
+import { LessonType, LikedLessonsResponse } from '@/interface'
 import { fetchUserLikedLessons } from '@/lib/api'
 import useIntersectionObserver from '@/hooks/useintersectionObserver'
 import { LessonItem } from '@/components/LessonList'
@@ -21,14 +21,24 @@ export default function UserLikedLessons() {
     hasNextPage,
     isError,
     isLoading,
-  } = useInfiniteQuery(
+  } = useInfiniteQuery<LikedLessonsResponse>(
     ['liked-lessons', session?.user?.email],
     fetchUserLikedLessons,
     {
       enabled: !!session?.accessToken,
-      getNextPageParam: (lastPage: any, pages) => {
-        if (lastPage?.data?.length === 0) return undefined
-        return pages.length + 1
+      getNextPageParam: (lastPage, pages) => {
+        // 데이터가 없거나 마지막 페이지의 데이터가 limit보다 작으면 더 이상 페이지가 없음
+        if (!lastPage?.data || lastPage.data.length < 8) {
+          return undefined
+        }
+        return lastPage.page + 1
+      },
+      // 중복 데이터 방지를 위한 select 옵션 추가
+      select: (data) => {
+        return {
+          pages: data.pages,
+          pageParams: data.pageParams,
+        }
       },
     },
   )
@@ -36,7 +46,7 @@ export default function UserLikedLessons() {
   useEffect(() => {
     let timerId: NodeJS.Timeout | undefined
 
-    if (isPageEnd && hasNextPage) {
+    if (isPageEnd && hasNextPage && !isFetching) {
       timerId = setTimeout(() => {
         fetchNextPage()
       }, 500)
@@ -47,7 +57,7 @@ export default function UserLikedLessons() {
         clearTimeout(timerId)
       }
     }
-  }, [fetchNextPage, hasNextPage, isPageEnd])
+  }, [fetchNextPage, hasNextPage, isPageEnd, isFetching])
 
   if (isError) {
     return (
@@ -65,6 +75,18 @@ export default function UserLikedLessons() {
     )
   }
 
+  // 중복 제거를 위한 Set 사용
+  const seenIds = new Set()
+  const filteredLessons = likedLessons?.pages.flatMap((page) =>
+    page.data.filter((lesson) => {
+      if (seenIds.has(lesson.id)) {
+        return false
+      }
+      seenIds.add(lesson.id)
+      return true
+    }),
+  )
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="font-semibold text-lg md:text-2xl mb-4">찜한 레슨 목록</h1>
@@ -73,12 +95,8 @@ export default function UserLikedLessons() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {likedLessons?.pages?.map((page: any, pageIndex) => (
-          <React.Fragment key={pageIndex}>
-            {page?.data?.map((lesson: LessonType) => (
-              <LessonItem key={lesson.id} lesson={lesson} />
-            ))}
-          </React.Fragment>
+        {filteredLessons?.map((lesson: LessonType) => (
+          <LessonItem key={lesson.id} lesson={lesson} />
         ))}
       </div>
 
