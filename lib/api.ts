@@ -7,13 +7,29 @@ const api = axios.create({
   withCredentials: true,
 })
 
+// api.interceptors.request.use(
+//   async (config) => {
+//     if (config.method !== 'OPTIONS') {
+//       const session = await getSession()
+//       console.log('Interceptor Session:', session) // 여기에 로그를 추가합니다.
+//       if (session?.accessToken) {
+//         config.headers['Authorization'] = `Bearer ${session.accessToken}`
+//       }
+//     }
+//     return config
+//   },
+//   (error) => {
+//     return Promise.reject(error)
+//   },
+// )
 api.interceptors.request.use(
   async (config) => {
     if (config.method !== 'OPTIONS') {
       const session = await getSession()
-      console.log('Interceptor Session:', session) // 여기에 로그를 추가합니다.
+      console.log('API Interceptor Session:', session)
       if (session?.accessToken) {
         config.headers['Authorization'] = `Bearer ${session.accessToken}`
+        config.headers['Content-Type'] = 'application/json'
       }
     }
     return config
@@ -138,11 +154,37 @@ export const updateComment = async (
   return response.data
 }
 
+// export const deleteComment = async (lessonId: number, commentId: number) => {
+//   const response = await api.delete(
+//     `/lesson/${lessonId}/comments/${commentId}/delete`,
+//   )
+//   return response.data
+// }
+
 export const deleteComment = async (lessonId: number, commentId: number) => {
-  const response = await api.delete(
-    `/lesson/${lessonId}/comments/${commentId}/delete`,
-  )
-  return response.data
+  try {
+    const session = await getSession()
+    console.log('Deleting comment with session:', session)
+
+    if (!session?.accessToken) {
+      throw new Error('No access token available')
+    }
+
+    const response = await api.delete(
+      `/lesson/${lessonId}/comments/${commentId}/delete`,
+      {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+      },
+    )
+
+    console.log('Delete response:', response)
+    return response.data
+  } catch (error) {
+    console.error('Delete comment error:', error)
+    throw error
+  }
 }
 
 // 벙개

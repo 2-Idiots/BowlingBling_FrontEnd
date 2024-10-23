@@ -7,6 +7,7 @@ import { CommentType, LessonType } from '@/interface'
 import { BiChevronRight } from 'react-icons/bi'
 import CommentListModal from './CommentListModal'
 import { FullPageLoader } from '../Loader'
+import CommentItem from './CommentItem' // CommentItem import 추가
 
 export default function CommentList({ data }: { data: LessonType }) {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
@@ -40,17 +41,11 @@ export default function CommentList({ data }: { data: LessonType }) {
         {comments?.pages?.[0]?.content
           .slice(0, 4)
           .map((comment: CommentType) => (
-            <div key={comment.id} className="flex flex-col gap-2">
-              <div className="flex gap-2 items-center">
-                <div>
-                  <h3 className="font-semibold">{comment.memberName}</h3>
-                  <div className="text-gray-500 text-xs">
-                    {new Date(comment.modifiedAt).toLocaleDateString()}
-                  </div>
-                </div>
-              </div>
-              <div className="text-gray-600">{comment.comments}</div>
-            </div>
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              lessonId={data.id}
+            />
           ))}
       </div>
 

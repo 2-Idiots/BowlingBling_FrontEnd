@@ -40,6 +40,7 @@ export interface UserType {
 
 export interface CommentType {
   id: number
+  image: string | null
   comments: string
   memberName: string
   modifiedAt: string

@@ -13,44 +13,51 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null
 
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: credentials.email,
-              password: credentials.password,
-            }),
-          })
+          // 먼저 로그인 요청
+          const loginRes = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/login`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password,
+              }),
+            },
+          )
 
-          if (!res.ok) {
-            const errorData = await res.text()
-            console.error(
-              'Login failed. Status:',
-              res.status,
-              'Error:',
-              errorData,
-            )
-            throw new Error(`Login failed: ${res.status} ${res.statusText}`)
+          if (!loginRes.ok) {
+            throw new Error('Login failed')
           }
 
-          const user = await res.json()
-          console.log('Backend response:', user)
+          const loginData = await loginRes.json()
 
-          if (!user || !user.accessToken) {
-            console.error('Invalid user data received:', user)
-            throw new Error('Invalid user data received from server')
+          // 로그인 성공 후 사용자 정보 요청
+          const userRes = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/users/info`,
+            {
+              headers: {
+                Authorization: `Bearer ${loginData.accessToken}`,
+              },
+            },
+          )
+
+          if (!userRes.ok) {
+            throw new Error('Failed to fetch user info')
           }
+
+          const userData = await userRes.json()
 
           return {
-            id: user.id || credentials.email,
+            id: userData.id || credentials.email,
             email: credentials.email,
-            name: user.name || 'User',
-            image: user.image || null,
-            accessToken: user.accessToken,
-            refreshToken: user.refreshToken,
+            name: userData.nickname, // nickname을 name으로 사용
+            image: userData.image || null,
+            accessToken: loginData.accessToken,
+            refreshToken: loginData.refreshToken,
           }
         } catch (error) {
-          console.error('Error during login:', error)
+          console.error('Error:', error)
           throw error
         }
       },
@@ -75,7 +82,8 @@ export const authOptions: NextAuthOptions = {
       }
       session.accessToken = token.accessToken
       session.refreshToken = token.refreshToken
-      console.log('Session callback:', session)
+
+      console.log('Session in callback:', session)
       return session
     },
   },

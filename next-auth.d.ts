@@ -1,16 +1,22 @@
-import NextAuth from 'next-auth'
-import { UserType } from '@/interface' // UserType을 import
+import 'next-auth'
 
 declare module 'next-auth' {
   interface Session {
     user: {
-      id: string
-      name?: string | null
-      email?: string | null
-      image?: string | null
-      role?: UserType['role']
+      email: string | null
+      name: string | null
+      image: string | null
     }
+    accessToken: string
+    refreshToken: string
   }
 
-  interface User extends UserType {}
+  interface User {
+    id: string
+    email: string
+    name: string
+    image: string | null
+    accessToken: string
+    refreshToken: string
+  }
 }
