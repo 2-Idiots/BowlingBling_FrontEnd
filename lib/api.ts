@@ -200,6 +200,21 @@ export const deleteComment = async (lessonId: number, commentId: number) => {
   }
 }
 
+export const fetchUserComments = async ({ pageParam = 0 }) => {
+  try {
+    const response = await api.get('/users/mycomment')
+    console.log('User Comments API Response:', response.data)
+    return {
+      data: response.data,
+      page: pageParam,
+      // 배열 형태로 오기 때문에 페이지네이션 관련 정보는 필요 없음
+    }
+  } catch (error) {
+    console.error('Error fetching user comments:', error)
+    throw error
+  }
+}
+
 // 벙개
 export const fetchGatherings = async (page = 1, limit = 8) => {
   const response = await api.get('/gatherings', {

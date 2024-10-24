@@ -49,6 +49,9 @@ export interface CommentType {
   comments: string
   memberName: string
   modifiedAt: string
+  commentType: 'LESSON' | 'CENTER' | 'GATHERING'
+  commentId: number
+  deleted: boolean
 }
 
 export interface CommentApiType {
