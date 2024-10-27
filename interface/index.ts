@@ -68,6 +68,15 @@ export interface LessonBookingRequest {
   time: string
 }
 
+export interface BookedLesson {
+  id: number
+  teacherName: string
+  date: string
+  time: string
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED'
+  price: number
+}
+
 export interface UserProfileUpdateType {
   email?: string
   name?: string

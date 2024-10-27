@@ -128,6 +128,20 @@ export const createLessonBooking = async (
   }
 }
 
+// 레슨 예약 조회(개인)
+export const fetchMyLessonBookings = async ({ pageParam = 1 }) => {
+  const response = await api.get('/lesson-booking/my-teachers', {
+    params: {
+      page: pageParam,
+      limit: 8,
+    },
+  })
+  return {
+    data: response.data,
+    page: pageParam,
+  }
+}
+
 // 볼링장
 export const fetchCenters = async (page = 1, limit = 8) => {
   const response = await api.get('/centers', {
