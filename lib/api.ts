@@ -1,4 +1,4 @@
-import { UserProfileUpdateType } from '@/interface'
+import { LessonBookingRequest, UserProfileUpdateType } from '@/interface'
 import axios from 'axios'
 import { getSession } from 'next-auth/react'
 
@@ -7,21 +7,6 @@ const api = axios.create({
   withCredentials: true,
 })
 
-// api.interceptors.request.use(
-//   async (config) => {
-//     if (config.method !== 'OPTIONS') {
-//       const session = await getSession()
-//       console.log('Interceptor Session:', session) // 여기에 로그를 추가합니다.
-//       if (session?.accessToken) {
-//         config.headers['Authorization'] = `Bearer ${session.accessToken}`
-//       }
-//     }
-//     return config
-//   },
-//   (error) => {
-//     return Promise.reject(error)
-//   },
-// )
 api.interceptors.request.use(
   async (config) => {
     if (config.method !== 'OPTIONS') {
@@ -47,20 +32,14 @@ export const fetchLessons = async (page = 1, limit = 8) => {
   return response.data
 }
 
-// export const fetchLessonById = async (id: string) => {
-//   const response = await api.get(`/lesson/${id}`)
-//   return response.data
-// }
-
 export const fetchLessonById = async (id: string) => {
   const response = await api.get(`/lesson/${id}`)
   const lessonData = response.data
 
-  // 백엔드에서 id나 isLiked를 제공하지 않는 경우, 여기서 추가
   return {
     ...lessonData,
-    id: parseInt(id), // 문자열 id를 숫자로 변환
-    isLiked: lessonData.isLiked || false, // isLiked가 없으면 기본값 false
+    id: parseInt(id),
+    isLiked: lessonData.isLiked || false,
   }
 }
 
@@ -101,19 +80,6 @@ export const unlikeLesson = async (lessonId: number) => {
   return response.data
 }
 
-// export const fetchUserLikedLessons = async () => {
-//   const session = await getSession()
-//   if (!session?.accessToken) {
-//     throw new Error('No access token available')
-//   }
-//   const response = await api.get('/users/liked-lessons', {
-//     headers: {
-//       Authorization: `Bearer ${session.accessToken}`,
-//     },
-//   })
-//   return response.data
-// }
-
 export const fetchUserLikedLessons = async ({ pageParam = 1 }) => {
   const response = await api.get('/users/liked-lessons', {
     params: {
@@ -124,6 +90,41 @@ export const fetchUserLikedLessons = async ({ pageParam = 1 }) => {
   return {
     data: response.data,
     page: pageParam,
+  }
+}
+
+// 레슨 예약
+export const createLessonBooking = async (
+  bookingData: LessonBookingRequest,
+) => {
+  try {
+    const session = await getSession()
+    if (!session?.accessToken) {
+      throw new Error('No access token available')
+    }
+
+    const requestData = {
+      lessonid: Number(bookingData.lessonid),
+      date: bookingData.date,
+      time: bookingData.time,
+    }
+
+    console.log('Sending booking data:', JSON.stringify(requestData, null, 2))
+
+    const response = await api.post('/lesson-booking', requestData, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    })
+
+    return response.data
+  } catch (error: any) {
+    console.error('Error creating lesson booking:', error)
+    if (error.response?.data) {
+      console.error('Error details:', error.response.data)
+    }
+    throw error
   }
 }
 

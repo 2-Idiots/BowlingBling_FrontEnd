@@ -26,7 +26,6 @@ export const filterState = atom({
   default: {
     date: '',
     time: '',
-    students: 1,
   },
 })
 

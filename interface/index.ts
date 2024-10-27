@@ -62,6 +62,12 @@ export interface CommentApiType {
   number: number
 }
 
+export interface LessonBookingRequest {
+  lessonid: number
+  date: string
+  time: string
+}
+
 export interface UserProfileUpdateType {
   email?: string
   name?: string

@@ -2,15 +2,38 @@
 
 import { useState, useEffect } from 'react'
 import { filterState } from '@/atom'
-import { LessonType } from '@/interface'
+import { LessonBookingRequest, LessonType } from '@/interface'
 import { useRecoilState } from 'recoil'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
+import { createLessonBooking } from '@/lib/api'
+import { useRouter } from 'next/navigation'
+import { toast } from 'react-hot-toast'
+
+const timeSlots = [
+  '09:00',
+  '10:00',
+  '11:00',
+  '12:00',
+  '13:00',
+  '14:00',
+  '15:00',
+  '16:00',
+  '17:00',
+  '18:00',
+  '19:00',
+  '20:00',
+  '21:00',
+  '22:00',
+  '23:00',
+]
 
 export default function BookingSection({ data }: { data: LessonType }) {
+  const router = useRouter()
   const [filterValue, setFilterValue] = useRecoilState(filterState)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     setSelectedDate(filterValue.date || null)
@@ -23,7 +46,7 @@ export default function BookingSection({ data }: { data: LessonType }) {
     setFilterValue((prev) => ({
       ...prev,
       date: date,
-      time: '', // Reset time when date changes
+      time: '',
     }))
   }
 
@@ -35,31 +58,43 @@ export default function BookingSection({ data }: { data: LessonType }) {
     }))
   }
 
-  const onChangeStudents = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterValue((prev) => ({
-      ...prev,
-      students: Number(e.target.value),
-    }))
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
 
-  // 시간 슬롯, 실제로는 data.operatingHours에서 가져와야함.
-  const timeSlots = [
-    '09:00',
-    '10:00',
-    '11:00',
-    '12:00',
-    '13:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-    '18:00',
-    '19:00',
-    '20:00',
-    '21:00',
-    '22:00',
-    '23:00',
-  ]
+    if (!data?.id) {
+      console.error('Lesson ID is missing:', data)
+      toast.error('레슨 정보를 찾을 수 없습니다.')
+      return
+    }
+
+    if (!selectedDate || !selectedTime) {
+      toast.error('날짜와 시간을 선택해주세요.')
+      return
+    }
+
+    const bookingData: LessonBookingRequest = {
+      lessonid: data.id,
+      date: selectedDate,
+      time: selectedTime,
+    }
+
+    console.log('Submitting booking data:', bookingData)
+
+    try {
+      setIsLoading(true)
+      const response = await createLessonBooking(bookingData)
+      toast.success('레슨이 성공적으로 예약되었습니다!')
+      router.push(`/lesson/${data.id}`)
+    } catch (error: any) {
+      console.error('Booking error details:', error.response?.data)
+      const errorMessage =
+        error.response?.data?.message ||
+        '레슨 예약에 실패했습니다. 다시 시도해주세요.'
+      toast.error(errorMessage)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="w-full">
@@ -73,7 +108,7 @@ export default function BookingSection({ data }: { data: LessonType }) {
           </div>
           <div className="text-xs">후기 {data.user?.Lesson?.length || 0}개</div>
         </div>
-        <form className="mt-2">
+        <form onSubmit={handleSubmit} className="mt-2">
           <div className="mt-2">
             <label className="text-xs font-semibold">레슨 날짜</label>
             <input
@@ -105,55 +140,21 @@ export default function BookingSection({ data }: { data: LessonType }) {
               </div>
             </div>
           )}
-          <div className="mt-2">
-            <label className="text-xs font-semibold">인원</label>
-            <select
-              onChange={onChangeStudents}
-              value={filterValue.students}
-              className="w-full px-4 py-3 border border-gray-400 rounded-md text-xs mt-1"
-            >
-              {[...Array(5)]?.map((_, i) => (
-                <option value={i + 1} key={i}>
-                  {i + 1}
-                </option>
-              ))}
-            </select>
-          </div>
           <div className="mt-6">
             <button
               type="submit"
-              className="bg-rose-500 hover:bg-rose-600 text-white rounded-md py-2.5 w-full"
-              disabled={!selectedDate || !selectedTime}
+              className={`bg-rose-500 hover:bg-rose-600 text-white rounded-md py-2.5 w-full ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              disabled={!selectedDate || !selectedTime || isLoading}
             >
-              레슨 예약하기
+              {isLoading ? '예약 처리중...' : '레슨 예약하기'}
             </button>
             <p className="text-center text-gray-600 mt-4 text-xs md:text-sm">
               예약 확정에는 요금이 청구되지 않습니다.
             </p>
           </div>
         </form>
-        <div className="mt-4 flex flex-col gap-2 border-b border-b-gray-300 pb-4 text-xs md:text-sm">
-          <div className="flex justify-between">
-            <div className="text-gray-600 underline underline-offset-4">
-              {data?.price?.toLocaleString()} x {filterValue.students || 1}명
-            </div>
-            <div className="text-gray-500">
-              ₩{(data?.price * (filterValue.students || 1)).toLocaleString()}
-            </div>
-          </div>
-          {/* <div className="flex justify-between">
-            <div className="text-gray-600 underline underline-offset-4">
-              예약 수수료
-            </div>
-            <div className="text-gray-500">₩0</div>
-          </div> */}
-          <div className="flex justify-between mt-6">
-            <div>총 합계</div>
-            <div>
-              ₩{(data?.price * (filterValue.students || 1)).toLocaleString()}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )
