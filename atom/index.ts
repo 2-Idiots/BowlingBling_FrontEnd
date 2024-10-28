@@ -6,6 +6,7 @@ import {
   LocationType,
 } from '@/interface'
 import { atom } from 'recoil'
+import { recoilPersist } from 'recoil-persist'
 
 export const selectedLessonState = atom<LessonType | null>({
   key: 'lesson',
@@ -37,4 +38,30 @@ export const selectedCenterState = atom<CenterType | null>({
 export const selectedGatheringState = atom<GatheringType | null>({
   key: 'selectedGatheringState',
   default: null,
+})
+
+const { persistAtom } = recoilPersist()
+
+export const lessonFormState = atom<LessonType | null>({
+  key: 'lessonRegisterForm',
+  default: {
+    id: 0,
+    title: '',
+    teacherName: '',
+    contents: '',
+    location: '',
+    qualifications: '',
+    lat: '',
+    lng: '',
+    place: '',
+    category: '',
+    price: 0,
+    hasFreeParking: false,
+    careerHistory: '',
+    program: '',
+    operatingHours: '',
+    imageUrls: [],
+    isLiked: false,
+  },
+  effects_UNSTABLE: [persistAtom],
 })

@@ -32,7 +32,7 @@ export default function UserMyPage() {
           </div>
         </Link>
         <Link
-          href="#"
+          href="/lesson/register/category"
           className="shadow-lg rounded-lg flex flex-col justify-between p-4 gap-12 hover:shadow-xl"
         >
           <GrChapterAdd className="text-xl md:text-3xl" />
