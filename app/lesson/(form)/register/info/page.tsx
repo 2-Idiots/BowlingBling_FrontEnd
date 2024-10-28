@@ -12,7 +12,6 @@ interface LessonInfoProps {
   title: string
   introduction: string
   contents: string
-  qualifications: string
   operatingHours: string
 }
 
@@ -33,10 +32,9 @@ export default function LessonRegisterInfo() {
       title: data.title,
       introduction: data.introduction,
       contents: data.contents,
-      qualifications: data.qualifications,
       operatingHours: data.operatingHours,
     })
-    router.push('/lesson/register/location') // 다음 단계로 이동
+    router.push('/lesson/register/feature')
   }
 
   useEffect(() => {
@@ -44,7 +42,6 @@ export default function LessonRegisterInfo() {
       setValue('title', lessonForm?.title)
       setValue('introduction', lessonForm?.introduction)
       setValue('contents', lessonForm?.contents)
-      setValue('qualifications', lessonForm?.qualifications)
       setValue('operatingHours', lessonForm?.operatingHours)
     }
   }, [lessonForm, setValue])
@@ -80,7 +77,7 @@ export default function LessonRegisterInfo() {
 
         <div className="flex flex-col gap-2">
           <label htmlFor="introduction" className="text-lg font-semibold">
-            소개
+            간단한 소개
           </label>
           <textarea
             rows={2}
@@ -114,28 +111,13 @@ export default function LessonRegisterInfo() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="qualifications" className="text-lg font-semibold">
-            자격 및 경력사항
-          </label>
-          <textarea
-            rows={3}
-            {...register('qualifications', { required: true })}
-            className="outline-none px-4 py-2 rounded-lg border-2 focus:border-black resize-none"
-            placeholder="보유한 자격증, 수상 경력, 교육 이력 등을 작성해주세요"
-          />
-          {errors.qualifications?.type === 'required' && (
-            <span className="text-red-600 text-sm">필수 항목입니다.</span>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2">
           <label htmlFor="operatingHours" className="text-lg font-semibold">
             운영 시간
           </label>
           <input
             {...register('operatingHours', { required: true })}
             className="outline-none px-4 py-2 rounded-lg border-2 focus:border-black"
-            placeholder="예: 평일 10:00-18:00"
+            placeholder="예: 평일 10:00-18:00, 주말 협의"
           />
           {errors.operatingHours?.type === 'required' && (
             <span className="text-red-600 text-sm">필수 항목입니다.</span>
