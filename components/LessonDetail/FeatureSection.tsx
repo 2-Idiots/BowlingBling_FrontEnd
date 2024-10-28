@@ -62,7 +62,7 @@ export default function FeatureSection({ data }: { data: LessonType }) {
         </div>
         <div className="py-8 px-4 border-b border-gray-300 leading-8 text-gray-800">
           <h1 className="font-semibold text-xl mb-2">캘린더</h1>
-          <CalendarSection />
+          <CalendarSection data={data} />
         </div>
       </div>
       <BookingSection data={data} />

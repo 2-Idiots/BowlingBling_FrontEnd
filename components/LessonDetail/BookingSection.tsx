@@ -1,4 +1,5 @@
 'use client'
+
 import { useState, useEffect } from 'react'
 import { filterState } from '@/atom'
 import { LessonBookingRequest, LessonType, BookedTimeSlot } from '@/interface'
@@ -8,7 +9,7 @@ import 'dayjs/locale/ko'
 import { createLessonBooking, fetchLessonBookedDates } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 
 const timeSlots = [
   '09:00',
@@ -29,16 +30,20 @@ const timeSlots = [
 ]
 
 export default function BookingSection({ data }: { data: LessonType }) {
+  const queryClient = useQueryClient()
   const router = useRouter()
   const [filterValue, setFilterValue] = useRecoilState(filterState)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
+  // 예약된 시간 슬롯 조회를 위한 쿼리 키를 상수로 정의
+  const BOOKED_SLOTS_QUERY_KEY = ['booked-slots', data.id]
+
   // 예약된 시간 슬롯 조회
   const { data: bookedSlots, isError: isSlotsError } = useQuery<
     BookedTimeSlot[]
-  >(['booked-slots', data.id], () => fetchLessonBookedDates(data.id), {
+  >(BOOKED_SLOTS_QUERY_KEY, () => fetchLessonBookedDates(data.id), {
     enabled: !!data.id,
     onError: (error) => {
       console.error('Failed to fetch booked slots:', error)
@@ -100,7 +105,21 @@ export default function BookingSection({ data }: { data: LessonType }) {
     try {
       setIsLoading(true)
       await createLessonBooking(bookingData)
+
+      // 예약 성공 후 캐시 데이터 즉시 업데이트
+      queryClient.setQueryData<BookedTimeSlot[]>(
+        BOOKED_SLOTS_QUERY_KEY,
+        (oldData) => {
+          if (!oldData) return [{ date: selectedDate, time: selectedTime }]
+          return [...oldData, { date: selectedDate, time: selectedTime }]
+        },
+      )
+
       toast.success('레슨이 성공적으로 예약되었습니다!')
+
+      // 추가로 데이터 재검증
+      queryClient.invalidateQueries(BOOKED_SLOTS_QUERY_KEY)
+
       router.push(`/lesson/${data.id}`)
     } catch (error: any) {
       const errorMessage =
