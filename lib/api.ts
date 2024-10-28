@@ -142,6 +142,29 @@ export const fetchMyLessonBookings = async ({ pageParam = 1 }) => {
   }
 }
 
+// 레슨의 모든 예약된 시간 조회
+export const fetchLessonBookedDates = async (lessonInfoId: number) => {
+  try {
+    const response = await api.get(`/lesson-booking/${lessonInfoId}/dates`)
+    return response.data
+  } catch (error) {
+    console.error('Error fetching booked dates:', error)
+    throw error
+  }
+}
+
+// 레슨 예약 취소
+export const cancelLessonBooking = async (lessonBookedId: number) => {
+  try {
+    const response = await api.delete(
+      `/lesson-booking/my-teachers/${lessonBookedId}/cancel`,
+    )
+    return response.data
+  } catch (error) {
+    console.error('Error canceling booking:', error)
+    throw error
+  }
+}
 // 볼링장
 export const fetchCenters = async (page = 1, limit = 8) => {
   const response = await api.get('/centers', {

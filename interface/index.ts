@@ -77,6 +77,21 @@ export interface BookedLesson {
   price: number
 }
 
+export interface BookedTimeSlot {
+  date: string
+  time: string
+}
+
+export interface BookedLesson {
+  id: number
+  lessonId: number
+  teacherName: string
+  date: string
+  time: string
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED'
+  price: number
+}
+
 export interface UserProfileUpdateType {
   email?: string
   name?: string

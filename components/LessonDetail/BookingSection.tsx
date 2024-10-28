@@ -1,14 +1,14 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { filterState } from '@/atom'
-import { LessonBookingRequest, LessonType } from '@/interface'
+import { LessonBookingRequest, LessonType, BookedTimeSlot } from '@/interface'
 import { useRecoilState } from 'recoil'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
-import { createLessonBooking } from '@/lib/api'
+import { createLessonBooking, fetchLessonBookedDates } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
+import { useQuery } from 'react-query'
 
 const timeSlots = [
   '09:00',
@@ -35,6 +35,17 @@ export default function BookingSection({ data }: { data: LessonType }) {
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
+  // 예약된 시간 슬롯 조회
+  const { data: bookedSlots, isError: isSlotsError } = useQuery<
+    BookedTimeSlot[]
+  >(['booked-slots', data.id], () => fetchLessonBookedDates(data.id), {
+    enabled: !!data.id,
+    onError: (error) => {
+      console.error('Failed to fetch booked slots:', error)
+      toast.error('예약된 시간 정보를 불러오는데 실패했습니다.')
+    },
+  })
+
   useEffect(() => {
     setSelectedDate(filterValue.date || null)
     setSelectedTime(filterValue.time || null)
@@ -43,6 +54,7 @@ export default function BookingSection({ data }: { data: LessonType }) {
   const onChangeDate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const date = e.target.value
     setSelectedDate(date)
+    setSelectedTime(null)
     setFilterValue((prev) => ({
       ...prev,
       date: date,
@@ -50,7 +62,15 @@ export default function BookingSection({ data }: { data: LessonType }) {
     }))
   }
 
+  const isTimeSlotBooked = (time: string) => {
+    if (!bookedSlots) return false
+    return bookedSlots.some(
+      (slot) => slot.date === selectedDate && slot.time === time,
+    )
+  }
+
   const onChangeTime = (time: string) => {
+    if (isTimeSlotBooked(time)) return
     setSelectedTime(time)
     setFilterValue((prev) => ({
       ...prev,
@@ -62,7 +82,6 @@ export default function BookingSection({ data }: { data: LessonType }) {
     e.preventDefault()
 
     if (!data?.id) {
-      console.error('Lesson ID is missing:', data)
       toast.error('레슨 정보를 찾을 수 없습니다.')
       return
     }
@@ -78,15 +97,12 @@ export default function BookingSection({ data }: { data: LessonType }) {
       time: selectedTime,
     }
 
-    console.log('Submitting booking data:', bookingData)
-
     try {
       setIsLoading(true)
-      const response = await createLessonBooking(bookingData)
+      await createLessonBooking(bookingData)
       toast.success('레슨이 성공적으로 예약되었습니다!')
       router.push(`/lesson/${data.id}`)
     } catch (error: any) {
-      console.error('Booking error details:', error.response?.data)
       const errorMessage =
         error.response?.data?.message ||
         '레슨 예약에 실패했습니다. 다시 시도해주세요.'
@@ -123,20 +139,35 @@ export default function BookingSection({ data }: { data: LessonType }) {
             <div className="mt-2">
               <label className="text-xs font-semibold">레슨 시간</label>
               <div className="grid grid-cols-4 gap-2 mt-1">
-                {timeSlots.map((time) => (
-                  <button
-                    key={time}
-                    type="button"
-                    onClick={() => onChangeTime(time)}
-                    className={`px-2 py-1 text-xs rounded-md ${
-                      selectedTime === time
-                        ? 'bg-rose-500 text-white'
-                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                    }`}
-                  >
-                    {time}
-                  </button>
-                ))}
+                {timeSlots.map((time) => {
+                  const isBooked = isTimeSlotBooked(time)
+                  return (
+                    <button
+                      key={time}
+                      type="button"
+                      onClick={() => onChangeTime(time)}
+                      disabled={isBooked}
+                      className={`px-2 py-1 text-xs rounded-md ${
+                        isBooked
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed relative group'
+                          : selectedTime === time
+                            ? 'bg-rose-500 text-white'
+                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                      }`}
+                    >
+                      {time}
+                      {isBooked && (
+                        <span
+                          className="absolute bottom-full left-1/2 transform -translate-x-1/2 
+                          bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100
+                          transition-opacity duration-200 whitespace-nowrap"
+                        >
+                          예약됨
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
               </div>
             </div>
           )}
