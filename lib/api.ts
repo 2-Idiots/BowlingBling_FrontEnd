@@ -7,14 +7,17 @@ const api = axios.create({
   withCredentials: true,
 })
 
+// 인터셉터에서 Content-Type을 조건부로 설정
 api.interceptors.request.use(
   async (config) => {
     if (config.method !== 'OPTIONS') {
       const session = await getSession()
-      console.log('API Interceptor Session:', session)
       if (session?.accessToken) {
         config.headers['Authorization'] = `Bearer ${session.accessToken}`
-        config.headers['Content-Type'] = 'application/json'
+        // multipart/form-data 요청이 아닐 때만 Content-Type을 application/json으로 설정
+        if (!config.data || !(config.data instanceof FormData)) {
+          config.headers['Content-Type'] = 'application/json'
+        }
       }
     }
     return config
@@ -165,6 +168,18 @@ export const cancelLessonBooking = async (lessonBookedId: number) => {
     throw error
   }
 }
+
+// 레슨 등록
+export const createLesson = async (formData: FormData) => {
+  try {
+    const response = await api.post('/lesson/create', formData)
+    return response.data
+  } catch (error) {
+    console.error('Error creating lesson:', error)
+    throw error
+  }
+}
+
 // 볼링장
 export const fetchCenters = async (page = 1, limit = 8) => {
   const response = await api.get('/centers', {

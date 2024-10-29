@@ -3,40 +3,105 @@
 import { lessonFormState } from '@/atom'
 import NextButton from '@/components/Form/NextButton'
 import Stepper from '@/components/Form/Stepper'
+import { createLesson } from '@/lib/api'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useResetRecoilState } from 'recoil'
+import { AiFillCamera, AiOutlineClose } from 'react-icons/ai'
+import toast from 'react-hot-toast'
 
 interface LessonImageProps {
   imageUrls: FileList
 }
 
+interface PreviewImage {
+  id: string
+  url: string
+  file: File
+}
+
 export default function LessonRegisterImage() {
   const router = useRouter()
   const [lessonForm, setLessonForm] = useRecoilState(lessonFormState)
+  const resetLessonForm = useResetRecoilState(lessonFormState)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [previewImages, setPreviewImages] = useState<PreviewImage[]>([])
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LessonImageProps>()
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const {
+      target: { files },
+    } = e
+
+    if (!files) return
+    if (previewImages.length + files.length > 5) {
+      toast.error('최대 5장까지만 업로드 가능합니다.')
+      return
+    }
+
+    Array.from(files).forEach((file: File) => {
+      const fileReader = new FileReader()
+      fileReader.readAsDataURL(file)
+
+      fileReader.onloadend = (event: ProgressEvent<FileReader>) => {
+        const { result } = event.target as FileReader
+        if (result) {
+          setPreviewImages((prev) => [
+            ...prev,
+            {
+              id: Math.random().toString(36).substring(7),
+              url: result.toString(),
+              file: file,
+            },
+          ])
+        }
+      }
+    })
+  }
+
+  const removeImage = (id: string) => {
+    setPreviewImages((prev) => prev.filter((image) => image.id !== id))
+  }
+
   const onSubmit = async (data: LessonImageProps) => {
+    if (previewImages.length === 0) {
+      toast.error('최소 1장의 이미지를 업로드해주세요.')
+      return
+    }
+
     setIsSubmitting(true)
     try {
-      // 여기에서 이미지 업로드 및 최종 레슨 등록 API 호출
-      // const formData = new FormData();
-      // Array.from(data.imageUrls).forEach((file) => {
-      //   formData.append('files', file);
-      // });
-      // formData.append('lessonData', JSON.stringify(lessonForm));
-      // await createLesson(formData);
+      const formData = new FormData()
 
-      // 성공 시 처리
-      router.push('/lesson/my') // 또는 적절한 완료 페이지로 이동
-    } catch (error) {
+      // 레슨 데이터를 JSON 형태로 추가 (변경 없음)
+      formData.append(
+        'request',
+        new Blob([JSON.stringify(lessonForm)], { type: 'application/json' }),
+      )
+
+      // 이미지 파일들 추가 (변경 없음)
+      previewImages.forEach((image) => {
+        formData.append('files', image.file)
+      })
+
+      await createLesson(formData)
+      toast.success('레슨이 등록되었습니다.')
+      resetLessonForm()
+      router.push('/lesson/my')
+    } catch (error: any) {
       console.error('레슨 등록 실패:', error)
+      if (error.response?.status === 401) {
+        toast.error('세션이 만료되었습니다. 다시 로그인해주세요.')
+        router.push('/login')
+        return
+      }
+      toast.error('레슨 등록에 실패했습니다. 다시 시도해주세요.')
     } finally {
       setIsSubmitting(false)
     }
@@ -60,18 +125,21 @@ export default function LessonRegisterImage() {
           <div className="col-span-full">
             <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
               <div className="text-center">
+                <AiFillCamera className="mx-auto h-12 w-12 text-gray-300" />
                 <div className="mt-4 flex text-sm leading-6 text-gray-600">
                   <label
                     htmlFor="file-upload"
-                    className="relative cursor-pointer rounded-md bg-white font-semibold text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500"
+                    className="relative cursor-pointer rounded-md bg-white font-semibold text-black hover:text-black/70 focus-within:outline-none focus-within:ring-2 focus-within:ring-black focus-within:ring-offset-2"
                   >
                     <span>최대 5장의 사진을</span>
                     <input
                       id="file-upload"
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      className="sr-only"
                       {...register('imageUrls', {
-                        required: true,
                         validate: {
-                          maxFiles: (files) => !files || files.length <= 5,
                           acceptedFormats: (files) =>
                             !files ||
                             Array.from(files).every((file) =>
@@ -81,10 +149,7 @@ export default function LessonRegisterImage() {
                             ),
                         },
                       })}
-                      type="file"
-                      className="sr-only"
-                      multiple
-                      accept="image/*"
+                      onChange={handleFileUpload}
                     />
                   </label>
                   <p className="pl-1">업로드 해주세요</p>
@@ -95,14 +160,6 @@ export default function LessonRegisterImage() {
               </div>
             </div>
           </div>
-          {errors.imageUrls?.type === 'required' && (
-            <span className="text-red-600 text-sm">이미지를 선택해주세요.</span>
-          )}
-          {errors.imageUrls?.type === 'maxFiles' && (
-            <span className="text-red-600 text-sm">
-              최대 5장까지만 업로드 가능합니다.
-            </span>
-          )}
           {errors.imageUrls?.type === 'acceptedFormats' && (
             <span className="text-red-600 text-sm">
               허용되지 않는 파일 형식이 포함되어 있습니다.
@@ -110,7 +167,32 @@ export default function LessonRegisterImage() {
           )}
         </div>
 
-        <NextButton type="submit" text="완료" disabled={isSubmitting} />
+        {previewImages.length > 0 && (
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            {previewImages.map((image) => (
+              <div key={image.id} className="relative">
+                <button
+                  type="button"
+                  onClick={() => removeImage(image.id)}
+                  className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors"
+                >
+                  <AiOutlineClose className="w-5 h-5" />
+                </button>
+                <img
+                  src={image.url}
+                  alt="미리보기"
+                  className="w-full h-64 object-cover rounded-lg shadow-md"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        <NextButton
+          type="submit"
+          text="완료"
+          disabled={isSubmitting || previewImages.length === 0}
+        />
       </form>
     </>
   )
